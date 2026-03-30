@@ -1,42 +1,33 @@
+# Developer Assessment
 
-# Developer Assessment 
+Thank you for your interest in a developer role at **genieX**. Please refer to the assessment file for your role:
 
-Thank you for your interest in a developer role at **genieX** - we’re excited to learn more about you. Please refer to the appropriate assessment file based on your role:
-
-- **Backend Assessment:** [backend.md](backend.md)
-- **Fullstack Assessment:** [fullstack.md](fullstack.md)
-- **Frontend Assessment:** [frontend.md](frontend.md)
-
----
-
-## Submission Process
-
-To submit your assessment, please follow these steps:
-
-1. **Fork this repository**
-   - Create a fork of this repository to your personal GitHub account.
-
-2. **Raise a Pull Request**
-   - Create a Pull Request from your personal fork back to this repository. Start the title with the role you've applied for. E.g. if Full Stack Developer, start the PR title with 'Full Stack:'
-
-3. **Include Required Documentation**
-   - Refer to your specific assessment file for the documentation requirements.
-
-4. **Include Required Documentation**
-   - Add your name and email id to the PR description so we can identify you
+- **Backend:** [backend.md](backend.md)
+- **Frontend:** [frontend.md](frontend.md)
+- **Fullstack:** [fullstack.md](fullstack.md)
 
 ---
 
-## Setup Instructions
+## Prerequisites
 
-To start development, simply run:
+- [Docker](https://docs.docker.com/get-docker/) and Docker Compose
 
-```bash
-docker compose up
-```
+That's it. You may use **any programming language**, **any framework**, and **any database** you prefer. The provided `docker-compose.yml` includes a PostgreSQL service as a convenience, but you are free to replace or reconfigure it.
 
-This will start all required services. Once the services are up, you can access:
+---
 
-- **API Documentation:** `http://localhost:8000/docs`
-- **Backend API:** `http://localhost:8000`
-- **Frontend (Fullstack only):** `http://localhost:5173`
+## Getting Started
+
+1. Fork this repository.
+2. Copy `.env.example` to `.env` and adjust if needed.
+3. Build your solution inside the `backend/` directory (and `frontend/` if applicable).
+4. Ensure `docker compose up` starts your entire stack.
+
+---
+
+## Submission
+
+1. Create a Pull Request from your fork back to this repository.
+2. Start the PR title with your role (e.g., `Backend: ...`, `Frontend: ...`, `Fullstack: ...`).
+3. Include your name and email in the PR description.
+4. Fill in `DECISIONS.md` with your design rationale (see template in repo).

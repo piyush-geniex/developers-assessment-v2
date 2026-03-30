@@ -6,7 +6,7 @@ You're building an **admin dashboard for a company that hires freelancers**. Fre
 
 Each task has a **worklog** containing multiple **time entries** recorded by the freelancer. The admin needs to review the logged work, decide what should be paid for, and issue payments.
 
-For this assessment, you will **build only the frontend interface**. Instead of connecting to a real backend, you will use **mock JSON data** to simulate API responses.
+For this assessment, you will **build only the frontend interface**. Use **mock data** to simulate API responses.
 
 ---
 
@@ -22,50 +22,45 @@ For this assessment, you will **build only the frontend interface**. Instead of 
 
 ## Implementation Guidelines
 
-- Build a **frontend-only implementation**
-- Use **mock JSON data** to simulate backend responses for:
-  - Worklogs
-  - Time entries
-  - Freelancer information
-  - Payment summaries
-- Mock data can be stored:
-  - in local JSON files, or  
-  - in a small mock data layer/service in the frontend
-- Structure the data in a way that resembles realistic API responses
+- Build a **frontend-only** implementation
+- Use **mock data** (local JSON files or an in-memory data layer) to simulate backend responses
+- Structure mock data to resemble realistic API responses
+- Your app must be startable via `docker compose up`
 
 ---
 
-## Suggested Stack
+## Technology
 
-You should use the following stack (already setup in the repo):
+Use any frontend framework and language you prefer:
+- React, Vue, Svelte, Angular, etc.
+- TypeScript or JavaScript
+- Any UI library
 
-- **Next.js**
-- **React**
-- **TypeScript**
-- Any UI library of your choice (optional)
+Add a `Dockerfile` inside `frontend/` and update `docker-compose.yml` as needed.
 
 ---
 
 ## Required Documentation
 
-Your PR must include:
+### a. `DECISIONS.md`
 
-### Screenshots
+Fill in the provided template with your design rationale, which AGENTS.md rules you followed/rejected, and edge cases you considered.
 
-Include screenshots of the key screens in your implementation:
+### b. Screenshots
 
+Include screenshots of key screens in your PR description:
 - Worklogs list view
 - Worklog details / time entries view
 - Date range filtering
 - Payment review screen
 
-Include the screenshots in the PR description.
-
 ---
 
 ## Submission Checklist
 
-- [ ] Functional frontend implementing the required workflows
-- [ ] Uses mock JSON data instead of a backend
-- [ ] Added screenshots of relevant screens to PR description
+- [ ] `docker compose up` starts your frontend application
+- [ ] Functional UI implementing the required workflows
+- [ ] Uses mock data instead of a real backend
+- [ ] Filled in `DECISIONS.md`
+- [ ] Added screenshots to PR description
 - [ ] Created Pull Request

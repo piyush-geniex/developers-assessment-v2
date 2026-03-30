@@ -13,41 +13,53 @@ However, the system must support the fact that **historical financial data is no
 The system must correctly handle the following realities:
 
 1. **Work can evolve after payment**
-   - Additional time segments may be recorded against previously settled work.
+   Additional time segments may be recorded against previously settled work.
 
 2. **Adjustments can be retroactive**
-   - Quality issues or disputes may result in deductions that can be applied to both work that was already settled in the past or yet to be settled work.
+   Quality issues or disputes may result in deductions applied to work that was already settled in the past or work yet to be settled.
 
 3. **Settlement attempts are not guaranteed to succeed**
-   - A payout attempt may fail or be explicitly cancelled.
+   A payout attempt may fail or be explicitly cancelled.
 
-You are expected to design a solution that preserves **financial correctness over time**, even as data continues to change.
+4. **Settlement periods may overlap with ongoing corrections**
+   A settlement run for November may execute in December, by which time adjustments to October (already settled) may have arrived. The system must account for prior-period adjustments in the current settlement without re-issuing the original remittance.
 
 ### Expected Endpoints
 
-1. **`/generate-remittances-for-all-users`**
-   - Generates remittances for all users based on eligible work.
+1. **`POST /generate-remittances`**
+   Generates remittances for all users for a given settlement period.
 
-2. **`/list-all-worklogs`**
-   - Lists all worklogs with filtering and amount information.
-   - **Query Parameters:**
-     - `remittanceStatus`: Filter by remittance status. Accepts `REMITTED` or `UNREMITTED`.
-   - **Response:** Must include the amount per worklog.
+   **Request body:**
+   ```json
+   {
+     "period_start": "2025-11-01",
+     "period_end": "2025-11-30"
+   }
+   ```
+
+2. **`GET /worklogs`**
+   Lists all worklogs with filtering and amount information.
+
+   **Query Parameters:**
+   - `remittance_status`: Filter by `REMITTED` or `UNREMITTED`
+   - `user_id` (optional): Filter by worker
+   - `period_start`, `period_end` (optional): Filter by date range
+
+   **Response:** Must include the calculated amount per worklog.
+
+### Seed Data
+
+A file `seed/worklogs.json` is included in the repository. You may use it to bootstrap your database, adapt it to your schema, or create your own test data. It is provided for convenience, not as a constraint.
 
 ---
 
-## Setup Instructions
+## Setup
 
-To start development, simply run:
+1. Copy `.env.example` to `.env`.
+2. Add a `Dockerfile` inside `backend/` for your application.
+3. Run `docker compose up` to start the database and your application.
 
-```bash
-docker compose up
-```
-
-This will start all required services including the backend API, database, and any other dependencies. Once the services are up, you can access:
-
-- **API Documentation:** `http://localhost:8000/docs`
-- **Backend API:** `http://localhost:8000`
+You may modify `docker-compose.yml` freely — change the database image, add services, adjust ports. The only requirement is that `docker compose up` starts a working system.
 
 ---
 
@@ -55,30 +67,38 @@ This will start all required services including the backend API, database, and a
 
 Your PR must include:
 
-a. **DBML Diagram**
-   - Include a DBML (Database Markup Language) diagram of the table schema you used to solve this problem.
-   - Save it as `schema.dbml` in the root directory or include it in your PR description.
+### a. `DECISIONS.md`
 
-b. **Sample API Responses**
-   - Include a JSON file showing sample responses from both endpoints.
-   - You can obtain these sample responses from the `/docs` endpoint on your backend server, after you've implemented the solution.
-   - Save it as `sample-responses.json` in the root directory or include it in your PR description.
+Fill in the provided `DECISIONS.md` template with:
+- Your schema design rationale
+- Which AGENTS.md recommendations you followed, which you rejected, and why
+- Edge cases you considered and how you handled them
 
-### Submission Checklist
+### b. Schema Diagram
+
+Include a schema diagram in any common format:
+- DBML (save as `schema.dbml`)
+- SQL DDL
+- Entity-relationship diagram (image)
+
+### c. Sample API Responses
+
+Include a JSON file (`sample-responses.json`) showing example responses from both endpoints with realistic data.
+
+---
+
+## Submission Checklist
 
 - [ ] Forked the repository
+- [ ] `docker compose up` starts a working system
 - [ ] Implemented both required endpoints
-- [ ] Added DBML diagram of your database schema
-- [ ] Added JSON file with sample responses from both endpoints
+- [ ] Filled in `DECISIONS.md`
+- [ ] Included schema diagram
+- [ ] Included sample API responses
 - [ ] Created Pull Request
 
 ---
 
-## Technology Stack
+## Technology
 
-This project uses:
-
-- **FastAPI** - Python backend framework
-- **SQLModel** - SQL database ORM
-- **PostgreSQL** - Database
-- **Docker Compose** - Container orchestration
+Use any language, framework, and database you prefer. The only requirement is Docker. The provided `docker-compose.yml` includes PostgreSQL as a starting point, but you may replace it with MySQL, MongoDB, SQLite, or anything else.

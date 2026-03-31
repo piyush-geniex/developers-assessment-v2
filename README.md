@@ -8,14 +8,6 @@ Thank you for your interest in a developer role at **genieX**. Please refer to t
 
 ---
 
-## Prerequisites
-
-- [Docker](https://docs.docker.com/get-docker/) and Docker Compose
-
-That's it. You may use **any programming language**, **any framework**, and **any database** you prefer. The provided `docker-compose.yml` includes a PostgreSQL service as a convenience, but you are free to replace or reconfigure it.
-
----
-
 ## Getting Started
 
 1. Fork this repository.

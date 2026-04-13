@@ -1,0 +1,46 @@
+// WorkLog Settlement — PostgreSQL schema (TypeORM entities)
+
+Table worklog {
+  id serial [pk, increment]
+  external_id varchar(64) [not null, unique, note: 'Stable id from seed (e.g. wl-001)']
+  user_id varchar(64) [not null]
+  user_name varchar(255) [not null]
+  task_name text [not null]
+  hourly_rate decimal(12,2) [not null]
+  segments jsonb [not null, note: 'Embedded time segments']
+  adjustments jsonb [not null, note: 'Embedded adjustments']
+
+  indexes {
+    user_id
+  }
+}
+
+Table remittance {
+  id serial [pk, increment]
+  user_id varchar(64) [not null]
+  period_start date [not null]
+  period_end date [not null]
+  amount decimal(14,2) [not null]
+  status varchar(32) [not null, note: 'completed | failed | cancelled']
+  created_at timestamptz [not null]
+
+  indexes {
+    (user_id, period_start, period_end)
+    (created_at, status)
+  }
+}
+
+Table remittance_line {
+  id serial [pk, increment]
+  remittance_id int [not null, ref: > remittance.id]
+  worklog_id int [not null, ref: > worklog.id]
+  component_kind varchar(32) [not null, note: 'segment | adjustment']
+  reference_id varchar(64) [not null, note: 'segment_id or adjustment_id from JSON']
+  amount decimal(14,2) [not null]
+
+  indexes {
+    remittance_id
+    worklog_id
+    (worklog_id, component_kind, reference_id) [unique]
+  }
+}

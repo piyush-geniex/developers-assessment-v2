@@ -1,0 +1,50 @@
+// WorkLog settlement schema (PostgreSQL). Table names are singular snake_case per backend/AGENTS.md.
+
+Table worklog {
+  id integer [pk, increment]
+  external_id varchar(64) [not null, unique, note: 'Seed key e.g. wl-001']
+  user_id varchar(64) [not null, note: 'Worker identifier']
+  user_name varchar(255) [not null]
+  task_name varchar(512) [not null]
+  hourly_rate numeric(12,4) [not null]
+}
+
+Table time_segment {
+  id integer [pk, increment]
+  worklog_id integer [not null, ref: > worklog.id, note: 'FK indexed']
+  external_id varchar(64) [not null, unique]
+  start timestamptz [not null]
+  end timestamptz [not null]
+  status varchar(32) [not null, note: 'approved | disputed | cancelled']
+  dispute_reason text
+}
+
+Table adjustment {
+  id integer [pk, increment]
+  worklog_id integer [not null, ref: > worklog.id, note: 'FK indexed']
+  external_id varchar(64) [not null, unique]
+  amount numeric(14,4) [not null, note: 'Negative for deductions, positive for bonuses']
+  reason text [not null]
+  applied_at timestamptz [not null]
+}
+
+Table remittance {
+  id integer [pk, increment]
+  user_id varchar(64) [not null]
+  period_start date [not null]
+  period_end date [not null]
+  amount numeric(14,4) [not null]
+  status varchar(32) [not null, note: 'PENDING | SUCCEEDED | FAILED | CANCELLED']
+  indexes {
+    (user_id, period_start, period_end) [unique, name: 'uq_remittance_user_period']
+  }
+}
+
+Table remittance_allocation {
+  id integer [pk, increment]
+  remittance_id integer [not null, ref: > remittance.id]
+  allocation_type varchar(32) [not null, note: 'segment | adjustment']
+  segment_id integer [ref: > time_segment.id, note: 'Nullable; partial unique when set']
+  adjustment_id integer [ref: > adjustment.id, note: 'Nullable; partial unique when set']
+  amount numeric(14,4) [not null, note: 'Snapshot at settlement time']
+}

@@ -1,0 +1,126 @@
+{
+  "generate_remittances_201": {
+    "description": "POST /generate-remittances — first successful run for November 2025 (after seed load)",
+    "response": {
+      "data": {
+        "remittances": [
+          {
+            "id": 1,
+            "user_id": "usr-a",
+            "period_start": "2025-11-01",
+            "period_end": "2025-11-30",
+            "amount": "1210.00",
+            "status": "SUCCEEDED"
+          },
+          {
+            "id": 2,
+            "user_id": "usr-b",
+            "period_start": "2025-11-01",
+            "period_end": "2025-11-30",
+            "amount": "1105.00",
+            "status": "SUCCEEDED"
+          },
+          {
+            "id": 3,
+            "user_id": "usr-c",
+            "period_start": "2025-11-01",
+            "period_end": "2025-11-30",
+            "amount": "522.50",
+            "status": "SUCCEEDED"
+          },
+          {
+            "id": 4,
+            "user_id": "usr-d",
+            "period_start": "2025-11-01",
+            "period_end": "2025-11-30",
+            "amount": "840.00",
+            "status": "SUCCEEDED"
+          }
+        ],
+        "summary": {
+          "users_considered": 4,
+          "remittances_created": 4,
+          "skipped_already_settled": 0,
+          "skipped_nothing_to_pay": 0,
+          "errors": []
+        }
+      },
+      "meta": {
+        "timestamp": "2026-04-13T11:20:00.000000+00:00",
+        "request_id": "550e8400-e29b-41d4-a716-446655440000"
+      }
+    }
+  },
+  "generate_remittances_200_idempotent": {
+    "description": "POST /generate-remittances — repeat for same period; no new remittances",
+    "response": {
+      "data": {
+        "remittances": [],
+        "summary": {
+          "users_considered": 4,
+          "remittances_created": 0,
+          "skipped_already_settled": 4,
+          "skipped_nothing_to_pay": 0,
+          "errors": []
+        }
+      },
+      "meta": {
+        "timestamp": "2026-04-13T11:21:00.000000+00:00",
+        "request_id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
+      }
+    }
+  },
+  "list_worklogs_200": {
+    "description": "GET /worklogs?remittance_status=UNREMITTED&period_start=2025-10-01&period_end=2025-10-31",
+    "response": {
+      "data": {
+        "worklogs": [
+          {
+            "id": 1,
+            "worklog_id": "wl-001",
+            "user_id": "usr-a",
+            "user_name": "Alice Chen",
+            "task_name": "API Integration - Phase 1",
+            "hourly_rate": "75.0000",
+            "calculated_amount": "600.00",
+            "remittance_status": "UNREMITTED"
+          },
+          {
+            "id": 3,
+            "worklog_id": "wl-003",
+            "user_id": "usr-b",
+            "user_name": "Bob Martinez",
+            "task_name": "Frontend Dashboard Redesign",
+            "hourly_rate": "85.0000",
+            "calculated_amount": "1062.50",
+            "remittance_status": "UNREMITTED"
+          },
+          {
+            "id": 5,
+            "worklog_id": "wl-005",
+            "user_id": "usr-c",
+            "user_name": "Carla Johansson",
+            "task_name": "Payment Gateway Integration",
+            "hourly_rate": "95.0000",
+            "calculated_amount": "1520.00",
+            "remittance_status": "UNREMITTED"
+          },
+          {
+            "id": 7,
+            "worklog_id": "wl-007",
+            "user_id": "usr-d",
+            "user_name": "David Park",
+            "task_name": "CI/CD Pipeline Configuration",
+            "hourly_rate": "70.0000",
+            "calculated_amount": "770.00",
+            "remittance_status": "UNREMITTED"
+          }
+        ]
+      },
+      "meta": {
+        "timestamp": "2026-04-13T11:22:00.000000+00:00",
+        "request_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+      }
+    }
+  }
+}

@@ -1,20 +1,49 @@
 # Design Decisions
 
-> Fill in each section below. This document is a required part of your
-> submission and will be evaluated alongside your code.
+> This document explains the schema and implementation choices for the
+> WorkLog settlement solution.
 
 ## Schema Design
 
 ### Tables / Collections
 
-<!-- List each table/collection, its columns/fields, and why you structured
-     it this way. What did you normalize vs. denormalize and why? -->
+- **`worklog`**
+  - Columns: `id`, `external_id`, `user_id`, `user_name`, `task_name`, `hourly_rate`
+  - Why: represents the task-level container for all related segments and adjustments. `external_id` preserves source identity from seed data, while `hourly_rate` stays on the worklog for deterministic segment valuation.
+
+- **`time_segment`**
+  - Columns: `id`, `worklog_id`, `external_id`, `start`, `end`, `status`, `dispute_reason`
+  - Why: segments are independently recorded and can have different lifecycle statuses (`approved`, `disputed`, `cancelled`). Keeping them separate supports overlap queries and auditability.
+
+- **`adjustment`**
+  - Columns: `id`, `worklog_id`, `external_id`, `amount`, `reason`, `applied_at`
+  - Why: retroactive financial changes are modeled as append-only ledger deltas so historical corrections are explicit and auditable.
+
+- **`remittance`**
+  - Columns: `id`, `user_id`, `period_start`, `period_end`, `amount`, `status`
+  - Why: captures one settlement attempt per user and period (unique on `(user_id, period_start, period_end)`), including attempt outcome (`SUCCEEDED`, `FAILED`, `CANCELLED`, `PENDING`).
+
+- **`remittance_allocation`**
+  - Columns: `id`, `remittance_id`, `allocation_type`, `segment_id`, `adjustment_id`, `amount`
+  - Why: allocation rows record exactly which segments/adjustments were included in a remittance and at what amount snapshot. Partial unique indexes prevent the same segment/adjustment from being allocated more than once in successful settlement history.
+
+- **Normalization vs denormalization**
+  - Chosen: normalized relational schema with explicit FK links.
+  - Reason: settlement correctness depends on FK integrity, uniqueness constraints, and precise "unallocated item" checks. Denormalized JSON would reduce joins but make financial invariants harder to enforce.
 
 ### Key Design Choices
 
-<!-- Describe 2-3 design decisions you made and the trade-offs you considered.
-     For example: "I chose separate tables for worklogs and segments because..."
-     or "I used an enum for status because..." -->
+1. **Allocation ledger instead of mutating settled rows**
+   - Choice: write remittance allocations for segments/adjustments rather than flipping per-item "settled" flags.
+   - Trade-off: one extra table and joins, but much better audit trail and idempotency safety.
+
+2. **Eligibility rules split by data type**
+   - Choice: segments are eligible by period overlap; adjustments are eligible when unallocated and `applied_at <= as_of`.
+   - Trade-off: slightly more complex query logic, but this correctly supports late retroactive adjustments without reopening previous successful remittances.
+
+3. **Status-aware settlement accounting**
+   - Choice: only allocations tied to `SUCCEEDED` remittances count as settled; failed/cancelled attempts do not block retries.
+   - Trade-off: additional filtering logic, but behavior aligns with requirement that settlement attempts may fail/cancel and later be retried.
 
 ---
 
@@ -22,13 +51,26 @@
 
 ### Rules I Followed
 
-<!-- Which recommendations from AGENTS.md did you adopt and why? -->
+- **Domain-oriented project layout** (`worklogs` and `settlement` domains with routes/services/models/validation): improves ownership and locality of business logic.
+- **Singular `snake_case` table names** and indexed foreign keys: aligns with guidance and supports performant FK traversal.
+- **Synchronous handlers and SQLAlchemy sync sessions**: keeps complexity low for this assessment scope.
+- **Response envelope** (`data`, `meta.timestamp`, `meta.request_id`): implemented consistently across endpoints.
+- **Service-level validation helpers** for periods, amounts, and segment intervals: makes key domain checks explicit and testable.
+- **Batch continuation behavior** in settlement: one user failure is captured in summary errors and does not abort the entire run.
 
 ### Rules I Rejected
 
-<!-- Which recommendations did you deliberately ignore or override?
-     For each, explain what the recommendation was and why you chose
-     a different approach. -->
+- **Wide JSONB record-table pattern**
+  - Recommendation: prefer wide embedded data models.
+  - Decision: rejected in favor of normalized tables because settlement allocation integrity (FKs + unique constraints) is central to correctness.
+
+- **Avoid SQL checks/aggregation entirely**
+  - Recommendation: keep aggregation in application code.
+  - Decision: monetary totals are computed in Python, but lightweight SQL existence checks and filters are used for practical query efficiency and clarity.
+
+- **Granular multi-commit settlement sample pattern**
+  - Recommendation: commit each unit in sequence.
+  - Decision: one transaction per user attempt is used to avoid partial writes (e.g., remittance created without complete allocations or vice versa).
 
 ---
 
@@ -36,13 +78,16 @@
 
 ### Considered Edge Cases
 
-<!-- List edge cases you identified in the requirements and how your
-     implementation handles them. Examples might include:
-     - What happens when settlement is run twice for the same period?
-     - How are retroactive adjustments applied?
-     - What happens when a payout fails? -->
+- Re-running a successful period is idempotent (`200`, no new remittances).
+- Failed/cancelled attempts can be retried and replaced by a later successful attempt.
+- Concurrency conflicts are handled via unique constraint + `IntegrityError` fallback to settled state.
+- Zero-duration approved segments contribute `0.00`.
+- Negative net remittances are allowed.
+- Users with no eligible items are counted under `skipped_nothing_to_pay`.
+- `/worklogs` period filter includes segment overlap or adjustment `applied_at` within the period window.
 
 ### Assumptions
 
-<!-- List any assumptions you made about the requirements that were
-     not explicitly stated. -->
+- Segment eligibility is based on worked-time overlap with the period.
+- Adjustment eligibility is based on unallocated rows and `applied_at` cutoff at execution time.
+- External payout provider integration is out of scope; status is persisted as the attempt outcome.

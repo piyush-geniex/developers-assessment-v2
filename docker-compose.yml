@@ -1,0 +1,31 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: apppass
+      POSTGRES_DB: assessment
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U appuser -d assessment"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: appuser
+      DB_PASSWORD: apppass
+      DB_NAME: assessment
+      SEED_PATH: /app/seed/worklogs.json
+      PORT: 5000
+      TYPEORM_SYNC: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy

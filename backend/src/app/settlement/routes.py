@@ -5,7 +5,7 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy.orm import Session
 
-from app.constants import HEADER_REQUEST_ID
+from app.constants import HEADER_REQUEST_ID, REMITTANCE_STATUSES_ALLOWED
 from app.database import get_db
 from app.envelope import response_envelope
 from app.settlement.schemas import GenerateRemittancesRequest
@@ -34,8 +34,18 @@ def generate_remittances(
         validate_settlement_period(body.period_start, body.period_end)
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+    if body.attempt_status not in REMITTANCE_STATUSES_ALLOWED:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="attempt_status must be one of: PENDING, SUCCEEDED, FAILED, CANCELLED",
+        )
 
-    remittances, summary = generate_remittances_for_period(db, body.period_start, body.period_end)
+    remittances, summary = generate_remittances_for_period(
+        db,
+        body.period_start,
+        body.period_end,
+        attempt_status=body.attempt_status,
+    )
     payload = {
         "remittances": remittances,
         "summary": summary,

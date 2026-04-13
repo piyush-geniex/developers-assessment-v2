@@ -5,6 +5,7 @@ from decimal import Decimal
 
 from app.constants import (
     HEADER_REQUEST_ID,
+    REMITTANCE_STATUS_FAILED,
     REMITTANCE_STATUS_SUCCEEDED,
     SEGMENT_STATUS_APPROVED,
     SEGMENT_STATUS_DISPUTED,
@@ -184,6 +185,70 @@ def test_generate_remittances_idempotent(client):
     )
     assert second.status_code == 200
     assert second.json()["data"]["summary"]["skipped_already_settled"] >= 1
+
+
+def test_generate_remittances_failed_attempt_does_not_mark_worklog_remitted(client):
+    _seed_minimal_worklog()
+    failed = client.post(
+        "/generate-remittances",
+        json={
+            "period_start": "2025-11-01",
+            "period_end": "2025-11-30",
+            "attempt_status": REMITTANCE_STATUS_FAILED,
+        },
+    )
+    assert failed.status_code == 201
+    remittance = failed.json()["data"]["remittances"][0]
+    assert remittance["status"] == REMITTANCE_STATUS_FAILED
+
+    worklogs = client.get("/worklogs", params={"user_id": "usr-test"})
+    assert worklogs.status_code == 200
+    row = worklogs.json()["data"]["worklogs"][0]
+    assert row["remittance_status"] == WORKLOG_REMITTANCE_UNREMITTED
+
+
+def test_generate_remittances_retry_after_failed_attempt_succeeds(client):
+    _seed_minimal_worklog()
+    first = client.post(
+        "/generate-remittances",
+        json={
+            "period_start": "2025-11-01",
+            "period_end": "2025-11-30",
+            "attempt_status": REMITTANCE_STATUS_FAILED,
+        },
+    )
+    assert first.status_code == 201
+
+    second = client.post(
+        "/generate-remittances",
+        json={
+            "period_start": "2025-11-01",
+            "period_end": "2025-11-30",
+            "attempt_status": REMITTANCE_STATUS_SUCCEEDED,
+        },
+    )
+    assert second.status_code == 201
+    remittance = second.json()["data"]["remittances"][0]
+    assert remittance["status"] == REMITTANCE_STATUS_SUCCEEDED
+    assert remittance["amount"] == "190.00"
+
+    worklogs = client.get("/worklogs", params={"user_id": "usr-test"})
+    row = worklogs.json()["data"]["worklogs"][0]
+    assert row["remittance_status"] == WORKLOG_REMITTANCE_REMITTED
+
+
+def test_generate_remittances_rejects_invalid_attempt_status(client):
+    _seed_minimal_worklog()
+    response = client.post(
+        "/generate-remittances",
+        json={
+            "period_start": "2025-11-01",
+            "period_end": "2025-11-30",
+            "attempt_status": "NOT_A_STATUS",
+        },
+    )
+    assert response.status_code == 400
+    assert "attempt_status" in response.json()["detail"]
 
 
 def test_generate_remittances_skipped_nothing_to_pay_no_overlap_and_future_adjustment(client):

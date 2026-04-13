@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime
 from decimal import Decimal
 
 from sqlalchemy import select
@@ -9,10 +9,12 @@ from sqlalchemy.orm import Session
 from app.constants import (
     SEGMENT_STATUSES_PAYABLE,
     SEGMENT_STATUS_APPROVED,
+    REMITTANCE_STATUSES_TERMINAL_SUCCESS,
     WORKLOG_REMITTANCE_REMITTED,
     WORKLOG_REMITTANCE_UNREMITTED,
 )
-from app.settlement.models import RemittanceAllocation
+from app.settlement.models import Remittance, RemittanceAllocation
+from app.settlement.validation import period_utc_bounds
 from app.worklogs.models import Adjustment, TimeSegment, Worklog
 from app.worklogs.validation import validate_segment_interval
 
@@ -44,14 +46,24 @@ def worklog_calculated_amount(worklog: Worklog) -> Decimal:
 
 def _allocated_segment_ids(session: Session) -> set[int]:
     rows = session.scalars(
-        select(RemittanceAllocation.segment_id).where(RemittanceAllocation.segment_id.is_not(None))
+        select(RemittanceAllocation.segment_id)
+        .join(Remittance, Remittance.id == RemittanceAllocation.remittance_id)
+        .where(
+            RemittanceAllocation.segment_id.is_not(None),
+            Remittance.status.in_(REMITTANCE_STATUSES_TERMINAL_SUCCESS),
+        )
     ).all()
     return {int(r) for r in rows if r is not None}
 
 
 def _allocated_adjustment_ids(session: Session) -> set[int]:
     rows = session.scalars(
-        select(RemittanceAllocation.adjustment_id).where(RemittanceAllocation.adjustment_id.is_not(None))
+        select(RemittanceAllocation.adjustment_id)
+        .join(Remittance, Remittance.id == RemittanceAllocation.remittance_id)
+        .where(
+            RemittanceAllocation.adjustment_id.is_not(None),
+            Remittance.status.in_(REMITTANCE_STATUSES_TERMINAL_SUCCESS),
+        )
     ).all()
     return {int(r) for r in rows if r is not None}
 
@@ -71,12 +83,6 @@ def worklog_remittance_status(session: Session, worklog: Worklog) -> str:
         if adjustment.id not in allocated_adj:
             return WORKLOG_REMITTANCE_UNREMITTED
     return WORKLOG_REMITTANCE_REMITTED
-
-
-def period_utc_bounds(period_start: date, period_end: date) -> tuple[datetime, datetime]:
-    start = datetime.combine(period_start, datetime.min.time(), tzinfo=timezone.utc)
-    end_exclusive = datetime.combine(period_end + timedelta(days=1), datetime.min.time(), tzinfo=timezone.utc)
-    return start, end_exclusive
 
 
 def worklog_matches_period(session: Session, worklog_id: int, period_start: date, period_end: date) -> bool:

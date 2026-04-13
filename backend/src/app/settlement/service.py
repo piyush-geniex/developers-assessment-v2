@@ -25,11 +25,25 @@ logger = logging.getLogger(__name__)
 
 
 def _allocated_segment_subquery():
-    return select(RemittanceAllocation.segment_id).where(RemittanceAllocation.segment_id.is_not(None))
+    return (
+        select(RemittanceAllocation.segment_id)
+        .join(Remittance, Remittance.id == RemittanceAllocation.remittance_id)
+        .where(
+            RemittanceAllocation.segment_id.is_not(None),
+            Remittance.status.in_(REMITTANCE_STATUSES_TERMINAL_SUCCESS),
+        )
+    )
 
 
 def _allocated_adjustment_subquery():
-    return select(RemittanceAllocation.adjustment_id).where(RemittanceAllocation.adjustment_id.is_not(None))
+    return (
+        select(RemittanceAllocation.adjustment_id)
+        .join(Remittance, Remittance.id == RemittanceAllocation.remittance_id)
+        .where(
+            RemittanceAllocation.adjustment_id.is_not(None),
+            Remittance.status.in_(REMITTANCE_STATUSES_TERMINAL_SUCCESS),
+        )
+    )
 
 
 def _candidate_segments(session: Session, user_id: str, ps: datetime, pe_excl: datetime) -> list[TimeSegment]:
@@ -80,6 +94,7 @@ def _settle_one_user(
     period_start: date,
     period_end: date,
     as_of: datetime,
+    attempt_status: str,
 ) -> tuple[str, dict | None]:
     """
     Returns (outcome, remittance_payload).
@@ -120,7 +135,7 @@ def _settle_one_user(
         period_start=period_start,
         period_end=period_end,
         amount=total.quantize(Decimal("0.01")),
-        status=REMITTANCE_STATUS_SUCCEEDED,
+        status=attempt_status,
     )
     session.add(remittance)
     session.flush()
@@ -166,6 +181,7 @@ def generate_remittances_for_period(
     period_end: date,
     *,
     as_of: datetime | None = None,
+    attempt_status: str = REMITTANCE_STATUS_SUCCEEDED,
 ) -> tuple[list[dict], dict]:
     """
     Batch settlement: each user is processed independently (per backend/AGENTS.md).
@@ -191,7 +207,14 @@ def generate_remittances_for_period(
     for user_id in user_ids:
         summary["users_considered"] += 1
         try:
-            outcome, payload = _settle_one_user(session, user_id, period_start, period_end, as_of)
+            outcome, payload = _settle_one_user(
+                session,
+                user_id,
+                period_start,
+                period_end,
+                as_of,
+                attempt_status,
+            )
             if outcome == "skipped_settled":
                 summary["skipped_already_settled"] += 1
             elif outcome == "skipped_empty":

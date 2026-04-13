@@ -14,10 +14,26 @@
           },
           {
             "id": 2,
+            "user_id": "usr-b",
+            "period_start": "2025-11-01",
+            "period_end": "2025-11-30",
+            "amount": "1105.00",
+            "status": "SUCCEEDED"
+          },
+          {
+            "id": 3,
             "user_id": "usr-c",
             "period_start": "2025-11-01",
             "period_end": "2025-11-30",
             "amount": "522.50",
+            "status": "SUCCEEDED"
+          },
+          {
+            "id": 4,
+            "user_id": "usr-d",
+            "period_start": "2025-11-01",
+            "period_end": "2025-11-30",
+            "amount": "840.00",
             "status": "SUCCEEDED"
           }
         ],
@@ -66,7 +82,7 @@
             "user_name": "Alice Chen",
             "task_name": "API Integration - Phase 1",
             "hourly_rate": "75.0000",
-            "calculated_amount": "356.25",
+            "calculated_amount": "600.00",
             "remittance_status": "UNREMITTED"
           },
           {
@@ -76,7 +92,27 @@
             "user_name": "Bob Martinez",
             "task_name": "Frontend Dashboard Redesign",
             "hourly_rate": "85.0000",
-            "calculated_amount": "510.00",
+            "calculated_amount": "1062.50",
+            "remittance_status": "UNREMITTED"
+          },
+          {
+            "id": 5,
+            "worklog_id": "wl-005",
+            "user_id": "usr-c",
+            "user_name": "Carla Johansson",
+            "task_name": "Payment Gateway Integration",
+            "hourly_rate": "95.0000",
+            "calculated_amount": "1520.00",
+            "remittance_status": "UNREMITTED"
+          },
+          {
+            "id": 7,
+            "worklog_id": "wl-007",
+            "user_id": "usr-d",
+            "user_name": "David Park",
+            "task_name": "CI/CD Pipeline Configuration",
+            "hourly_rate": "70.0000",
+            "calculated_amount": "770.00",
             "remittance_status": "UNREMITTED"
           }
         ]

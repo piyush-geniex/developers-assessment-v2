@@ -1,0 +1,61 @@
+Table worklog {
+  id Int [pk, increment]
+  external_id String [unique, not null]
+  user_id String [not null]
+  user_name String [not null]
+  task_name String [not null]
+  hourly_rate Decimal [not null]
+  segment_ids Json [default: "[]"]
+  adjustment_ids Json [default: "[]"]
+  status String [default: "UNREMITTED"]
+  remittance_id Int
+  created_at DateTime [default: `now()`, not null]
+
+  indexes {
+    user_id
+    remittance_id
+    status
+  }
+}
+
+Table record {
+  id Int [pk, increment]
+  type String [not null] // 'segment' or 'adjustment'
+  parent_id Int [not null]
+  payload Json [not null]
+  start_time DateTime
+  end_time DateTime
+  seg_status String // 'approved', 'disputed', 'cancelled'
+  applied_at DateTime
+  remittance_id Int
+  created_at DateTime [default: `now()`, not null]
+
+  indexes {
+    parent_id
+    (created_at, type)
+    start_time
+    applied_at
+    remittance_id
+  }
+}
+
+Table remittance {
+  id Int [pk, increment]
+  user_id String [not null]
+  period_start Date [not null]
+  period_end Date [not null]
+  amount Decimal [not null]
+  status String [default: "PENDING"]
+  worklog_ids Json [default: "[]"]
+  created_at DateTime [default: `now()`, not null]
+
+  indexes {
+    user_id
+    created_at
+    (user_id, period_start, period_end) [unique]
+  }
+}
+
+Ref: worklog.remittance_id > remittance.id
+Ref: record.parent_id > worklog.id
+Ref: record.remittance_id > remittance.id

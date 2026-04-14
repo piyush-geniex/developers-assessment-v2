@@ -1,0 +1,59 @@
+{
+  "POST /generate-remittances": {
+    "description": "Successful run with partial per-user errors omitted when all succeed",
+    "response": {
+      "success": true,
+      "generated": [
+        {
+          "user_id": 1,
+          "remittance_id": 3,
+          "total_amount": 4525.5
+        },
+        {
+          "user_id": 2,
+          "remittance_id": 4,
+          "total_amount": 2180.25
+        }
+      ],
+      "errors": []
+    }
+  },
+  "GET /worklogs": {
+    "description": "List with breakdown; amounts are illustrative",
+    "response": [
+      {
+        "worklog_id": 2,
+        "user_id": 1,
+        "task_id": "Database Migration Scripts",
+        "status": "ACTIVE",
+        "base_amount": 318.75,
+        "adjustments": 0,
+        "final_amount": 318.75,
+        "remittance_status": "UNREMITTED",
+        "breakdown": {
+          "segments": [
+            {
+              "id": 4,
+              "duration_minutes": 240,
+              "rate": 75,
+              "amount": null,
+              "line_amount": 300,
+              "earned_at": "2025-11-03",
+              "created_at": "2025-11-20T10:00:00.000Z"
+            },
+            {
+              "id": 5,
+              "duration_minutes": 150,
+              "rate": 75,
+              "amount": null,
+              "line_amount": 187.5,
+              "earned_at": "2025-11-04",
+              "created_at": "2025-11-20T10:00:00.000Z"
+            }
+          ],
+          "adjustments": []
+        }
+      }
+    ]
+  }
+}

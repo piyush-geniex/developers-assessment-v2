@@ -1,0 +1,65 @@
+Table user {
+  id integer [pk, increment]
+  name varchar [not null]
+  created_at timestamptz [not null]
+}
+
+Table worklog {
+  id integer [pk, increment]
+  user_id integer [not null, ref: > user.id]
+  task_name varchar [not null]
+  hourly_rate numeric(12, 2) [not null]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+Table time_segment {
+  id integer [pk, increment]
+  worklog_id integer [not null, ref: > worklog.id]
+  start_time timestamptz [not null]
+  end_time timestamptz [not null]
+  status varchar [not null, note: 'APPROVED | DISPUTED | CANCELLED']
+  dispute_reason text
+  created_at timestamptz [not null]
+}
+
+Table worklog_adjustment {
+  id integer [pk, increment]
+  worklog_id integer [not null, ref: > worklog.id]
+  amount numeric(12, 2) [not null, note: '+/-']
+  reason text [not null]
+  applied_at timestamptz [not null]
+  created_at timestamptz [not null]
+}
+
+Table ledger_entry {
+  id integer [pk, increment]
+  user_id integer [not null, ref: > user.id]
+  worklog_id integer [ref: > worklog.id]
+  type varchar [not null, note: 'EARNED | ADJUSTMENT | REVERSAL']
+  amount numeric(12, 2) [not null, note: '+/-']
+  period_start date [not null]
+  period_end date [not null]
+  reference_type varchar [not null]
+  reference_id varchar [not null]
+  created_at timestamptz [not null]
+}
+
+Table remittance {
+  id integer [pk, increment]
+  user_id integer [not null, ref: > user.id]
+  period_start date [not null]
+  period_end date [not null]
+  total_amount numeric(12, 2) [not null]
+  status varchar [not null, note: 'PENDING | SUCCESS | FAILED | CANCELLED']
+  idempotency_key varchar [not null, unique]
+  created_at timestamptz [not null]
+  processed_at timestamptz
+}
+
+Table remittance_item {
+  id integer [pk, increment]
+  remittance_id integer [not null, ref: > remittance.id]
+  ledger_entry_id integer [not null, ref: > ledger_entry.id]
+  amount numeric(12, 2) [not null]
+}

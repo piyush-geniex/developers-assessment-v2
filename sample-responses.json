@@ -1,0 +1,59 @@
+{
+  "post_generate_remittances": {
+    "request": {
+      "method": "POST",
+      "path": "/generate-remittances",
+      "body": {
+        "period_start": "2025-11-01",
+        "period_end": "2025-11-30"
+      }
+    },
+    "response": {
+      "data": {
+        "period_start": "2025-11-01",
+        "period_end": "2025-11-30",
+        "created": 4,
+        "skipped": 0,
+        "failed": 0,
+        "errors": []
+      }
+    }
+  },
+  "get_worklogs": {
+    "request": {
+      "method": "GET",
+      "path": "/worklogs?user_id=1&period_start=2025-11-01&period_end=2025-11-30"
+    },
+    "response": {
+        "data": [
+            {
+                "worklog_id": 1,
+                "user_id": 1,
+                "user_name": "Alice Chen",
+                "task_name": "API Integration - Phase 1",
+                "hourly_rate": 75.0,
+                "remittance_status": "REMITTED",
+                "amount": 600.0
+            },
+            {
+                "worklog_id": 2,
+                "user_id": 1,
+                "user_name": "Alice Chen",
+                "task_name": "Database Migration Scripts",
+                "hourly_rate": 75.0,
+                "remittance_status": "REMITTED",
+                "amount": 487.5
+            },
+            {
+                "worklog_id": 9,
+                "user_id": 1,
+                "user_name": "Alice Chen",
+                "task_name": "API Integration - Phase 2",
+                "hourly_rate": 80.0,
+                "remittance_status": "REMITTED",
+                "amount": 760.0
+            }
+        ]
+    }
+  }
+}

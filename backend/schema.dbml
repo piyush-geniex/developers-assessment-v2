@@ -1,0 +1,57 @@
+// Worker compensation — PostgreSQL schema (see also src/migrations/)
+
+Table users {
+  id int [pk, increment]
+  name varchar(255) [not null]
+}
+
+Table worklog {
+  id int [pk, increment]
+  user_id int [not null, ref: > users.id]
+  task_id varchar(128) [not null]
+  status varchar(16) [not null, note: 'ACTIVE | CLOSED']
+}
+
+Table work_log_segment {
+  id int [pk, increment]
+  worklog_id int [not null, ref: > worklog.id]
+  duration_minutes int [not null]
+  rate decimal(19,4) [note: 'nullable if amount set']
+  amount decimal(19,4) [note: 'nullable if rate set']
+  earned_at date [not null]
+  created_at timestamptz [not null, default: `now()`]
+}
+
+Table adjustment {
+  id int [pk, increment]
+  worklog_id int [not null, ref: > worklog.id]
+  type varchar(16) [not null, note: 'ADD | DEDUCT | MODIFY']
+  amount_delta decimal(19,4) [not null]
+  reason varchar(1024) [not null]
+  created_at timestamptz [not null, default: `now()`]
+  applies_to_segment_id int [null, ref: > work_log_segment.id]
+}
+
+Table remittance {
+  id int [pk, increment]
+  user_id int [not null, ref: > users.id]
+  period_start date [not null]
+  period_end date [not null]
+  total_amount decimal(19,4) [not null]
+  status varchar(16) [not null, note: 'SUCCESS | FAILED | CANCELLED']
+  error_message varchar(2048) [null]
+  created_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    (user_id, period_start, period_end) [unique, name: 'uq_remittance_user_period']
+  }
+}
+
+Table remittance_item {
+  id int [pk, increment]
+  remittance_id int [not null, ref: > remittance.id]
+  worklog_id int [not null, ref: > worklog.id]
+  computed_amount decimal(19,4) [not null]
+  adjustment_applied_amount decimal(19,4) [not null]
+  delta_paid decimal(19,4) [not null]
+}

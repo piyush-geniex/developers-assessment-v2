@@ -1,0 +1,57 @@
+// WorkLog Settlement System — Schema
+// Format: DBML (dbdiagram.io)
+
+Table worklog {
+  id                 int          [pk, increment]
+  external_id        varchar      [unique, not null]
+  user_id            varchar      [not null]
+  user_name          varchar      [not null]
+  task_name          varchar      [not null]
+  hourly_rate        decimal(10,2)[not null]
+  remittance_status  varchar      [not null, default: "'UNREMITTED'", note: "'REMITTED' | 'UNREMITTED'"]
+  created_at         timestamptz  [default: `now()`]
+}
+
+Table time_segment {
+  id             int          [pk, increment]
+  external_id    varchar      [unique, not null]
+  worklog_id     int          [not null, ref: > worklog.id]
+  started_at     timestamptz  [not null]
+  ended_at       timestamptz  [not null]
+  status         varchar      [not null, note: "'approved' | 'disputed' | 'cancelled'"]
+  dispute_reason text         [null]
+
+  indexes {
+    worklog_id [name: "idx_time_segment_worklog_id"]
+  }
+}
+
+Table adjustment {
+  id                        int           [pk, increment]
+  external_id               varchar       [unique, not null]
+  worklog_id                int           [not null, ref: > worklog.id]
+  amount                    decimal(12,2) [not null, note: "positive = bonus, negative = deduction"]
+  reason                    text          [not null]
+  applied_at                timestamptz   [not null]
+  settled_in_remittance_id  int           [null, ref: > remittance.id, note: "NULL = not yet settled; set when included in a settlement run"]
+
+  indexes {
+    worklog_id                  [name: "idx_adjustment_worklog_id"]
+    settled_in_remittance_id    [name: "idx_adjustment_remittance_id"]
+  }
+}
+
+Table remittance {
+  id           int           [pk, increment]
+  user_id      varchar       [not null]
+  user_name    varchar       [not null]
+  period_start date          [not null]
+  period_end   date          [not null]
+  amount       decimal(12,2) [not null]
+  status       varchar       [not null, default: "'SETTLED'", note: "'SETTLED' | 'FAILED' | 'CANCELLED'"]
+  created_at   timestamptz   [default: `now()`]
+
+  indexes {
+    (user_id, period_start, period_end) [unique, name: "uq_remittance_user_period"]
+  }
+}

@@ -1,0 +1,184 @@
+{
+  "get_worklogs": {
+    "request": "GET /worklogs?period_start=2025-11-01&period_end=2025-11-30&remittance_status=UNREMITTED",
+    "response": {
+      "filters": {
+        "remittance_status": "UNREMITTED",
+        "user_id": null,
+        "period_start": "2025-11-01",
+        "period_end": "2025-11-30"
+      },
+      "count": 10,
+      "items": [
+        {
+          "worklog_id": "wl-001",
+          "user_id": "usr-a",
+          "user_name": "Alice Chen",
+          "task_name": "API Integration - Phase 1",
+          "remittance_status": "UNREMITTED",
+          "calculated_amount": -37.5,
+          "approved_hours": 0,
+          "latest_remittance_id": null,
+          "created_at": "2026-04-16T00:00:00.000Z"
+        },
+        {
+          "worklog_id": "wl-002",
+          "user_id": "usr-a",
+          "user_name": "Alice Chen",
+          "task_name": "Database Migration Scripts",
+          "remittance_status": "UNREMITTED",
+          "calculated_amount": 487.5,
+          "approved_hours": 6.5,
+          "latest_remittance_id": null,
+          "created_at": "2026-04-16T00:00:00.000Z"
+        },
+        {
+          "worklog_id": "wl-003",
+          "user_id": "usr-b",
+          "user_name": "Bob Martinez",
+          "task_name": "Frontend Dashboard Redesign",
+          "remittance_status": "UNREMITTED",
+          "calculated_amount": 0,
+          "approved_hours": 0,
+          "latest_remittance_id": null,
+          "created_at": "2026-04-16T00:00:00.000Z"
+        },
+        {
+          "worklog_id": "wl-004",
+          "user_id": "usr-b",
+          "user_name": "Bob Martinez",
+          "task_name": "Component Library Setup",
+          "remittance_status": "UNREMITTED",
+          "calculated_amount": 340,
+          "approved_hours": 4,
+          "latest_remittance_id": null,
+          "created_at": "2026-04-16T00:00:00.000Z"
+        },
+        {
+          "worklog_id": "wl-005",
+          "user_id": "usr-c",
+          "user_name": "Carla Johansson",
+          "task_name": "Payment Gateway Integration",
+          "remittance_status": "UNREMITTED",
+          "calculated_amount": 0,
+          "approved_hours": 0,
+          "latest_remittance_id": null,
+          "created_at": "2026-04-16T00:00:00.000Z"
+        },
+        {
+          "worklog_id": "wl-006",
+          "user_id": "usr-c",
+          "user_name": "Carla Johansson",
+          "task_name": "Webhook Event Handlers",
+          "remittance_status": "UNREMITTED",
+          "calculated_amount": 522.5,
+          "approved_hours": 6,
+          "latest_remittance_id": null,
+          "created_at": "2026-04-16T00:00:00.000Z"
+        },
+        {
+          "worklog_id": "wl-007",
+          "user_id": "usr-d",
+          "user_name": "David Park",
+          "task_name": "CI/CD Pipeline Configuration",
+          "remittance_status": "UNREMITTED",
+          "calculated_amount": 0,
+          "approved_hours": 0,
+          "latest_remittance_id": null,
+          "created_at": "2026-04-16T00:00:00.000Z"
+        },
+        {
+          "worklog_id": "wl-008",
+          "user_id": "usr-d",
+          "user_name": "David Park",
+          "task_name": "Monitoring and Alerting Setup",
+          "remittance_status": "UNREMITTED",
+          "calculated_amount": 840,
+          "approved_hours": 12,
+          "latest_remittance_id": null,
+          "created_at": "2026-04-16T00:00:00.000Z"
+        },
+        {
+          "worklog_id": "wl-009",
+          "user_id": "usr-a",
+          "user_name": "Alice Chen",
+          "task_name": "API Integration - Phase 2",
+          "remittance_status": "UNREMITTED",
+          "calculated_amount": 640,
+          "approved_hours": 8,
+          "latest_remittance_id": null,
+          "created_at": "2026-04-16T00:00:00.000Z"
+        },
+        {
+          "worklog_id": "wl-010",
+          "user_id": "usr-b",
+          "user_name": "Bob Martinez",
+          "task_name": "Accessibility Audit Fixes",
+          "remittance_status": "UNREMITTED",
+          "calculated_amount": 935,
+          "approved_hours": 11,
+          "latest_remittance_id": null,
+          "created_at": "2026-04-16T00:00:00.000Z"
+        }
+      ]
+    }
+  },
+  "post_generate_remittances": {
+    "request": {
+      "method": "POST",
+      "path": "/generate-remittances",
+      "body": {
+        "period_start": "2025-11-01",
+        "period_end": "2025-11-30"
+      }
+    },
+    "response": {
+      "period_start": "2025-11-01",
+      "period_end": "2025-11-30",
+      "created_count": 4,
+      "skipped_count": 0,
+      "failed_count": 0,
+      "total_amount": 7717.5,
+      "remittances": [
+        {
+          "remittance_id": 1,
+          "user_id": "usr-a",
+          "user_name": "Alice Chen",
+          "amount": 1727.5,
+          "status": "SUCCEEDED",
+          "worklog_ids": ["wl-001", "wl-002", "wl-009"],
+          "record_count": 7
+        },
+        {
+          "remittance_id": 2,
+          "user_id": "usr-b",
+          "user_name": "Bob Martinez",
+          "amount": 2337.5,
+          "status": "SUCCEEDED",
+          "worklog_ids": ["wl-003", "wl-004", "wl-010"],
+          "record_count": 6
+        },
+        {
+          "remittance_id": 3,
+          "user_id": "usr-c",
+          "user_name": "Carla Johansson",
+          "amount": 2042.5,
+          "status": "SUCCEEDED",
+          "worklog_ids": ["wl-005", "wl-006"],
+          "record_count": 6
+        },
+        {
+          "remittance_id": 4,
+          "user_id": "usr-d",
+          "user_name": "David Park",
+          "amount": 1610,
+          "status": "SUCCEEDED",
+          "worklog_ids": ["wl-007", "wl-008"],
+          "record_count": 5
+        }
+      ],
+      "skipped_users": [],
+      "failed_users": []
+    }
+  }
+}

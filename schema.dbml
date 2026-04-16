@@ -1,0 +1,45 @@
+Table worklog {
+  id int [pk, increment]
+  external_id text [not null, unique]
+  user_id text [not null]
+  user_name text [not null]
+  task_name text [not null]
+  hourly_rate decimal(10,2) [not null]
+  segment_ids jsonb [not null, default: '[]']
+  adjustment_ids jsonb [not null, default: '[]']
+  status text [not null, default: 'UNREMITTED']
+  remittance_id int
+  created_at timestamptz [not null, default: `now()`]
+}
+
+Table record {
+  id int [pk, increment]
+  type text [not null]
+  parent_id int [not null]
+  payload jsonb [not null]
+  start_time timestamptz
+  end_time timestamptz
+  seg_status text
+  applied_at timestamptz
+  remittance_id int
+  created_at timestamptz [not null, default: `now()`]
+}
+
+Table remittance {
+  id int [pk, increment]
+  user_id text [not null]
+  period_start date [not null]
+  period_end date [not null]
+  amount decimal(10,2) [not null]
+  status text [not null, default: 'PENDING']
+  worklog_ids jsonb [not null, default: '[]']
+  created_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    (user_id, period_start, period_end) [unique]
+  }
+}
+
+Ref: record.parent_id > worklog.id [delete: cascade]
+Ref: record.remittance_id > remittance.id [delete: set null]
+Ref: worklog.remittance_id > remittance.id [delete: set null]

@@ -3,10 +3,15 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
+import { requestIdMiddleware } from './common/request-id.middleware';
+import { ResponseEnvelopeInterceptor } from './common/response-envelope.interceptor';
+import { EnvelopeExceptionFilter } from './common/envelope-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = app.get(ConfigService);
+
+  app.use(requestIdMiddleware);
 
   const allowedOriginString = config.getOrThrow('BACKEND_CORS_ORIGINS');
   app.enableCors({
@@ -25,17 +30,18 @@ async function bootstrap() {
   });
 
   app.use(
-      helmet({
-        frameguard: { action: 'deny' },
-        noSniff: true,
-        hidePoweredBy: true,
-        dnsPrefetchControl: { allow: false },
-        ieNoOpen: true,
-      }),
+    helmet({
+      frameguard: { action: 'deny' },
+      noSniff: true,
+      hidePoweredBy: true,
+      dnsPrefetchControl: { allow: false },
+      ieNoOpen: true,
+    }),
   );
 
-
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+  app.useGlobalInterceptors(new ResponseEnvelopeInterceptor());
+  app.useGlobalFilters(new EnvelopeExceptionFilter());
 
   await app.listen(config.getOrThrow('PORT') ?? 3000);
 }

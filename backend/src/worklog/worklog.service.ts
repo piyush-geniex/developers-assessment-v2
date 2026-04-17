@@ -1,81 +1,47 @@
 import { Injectable } from '@nestjs/common';
-import {PrismaService} from "../prisma/prisma.service";
-import {GetWorklogsDto} from "./dto/get-worklogs.dto";
+import { PrismaService } from '../prisma/prisma.service';
+import { GetWorklogsDto } from './dto/get-worklogs.dto';
+import {
+  computeAmounts,
+  fetchWorklogs,
+  parsePeriod,
+  toWorklogResponses,
+} from './worklog.calculation';
 
 @Injectable()
 export class WorklogService {
+  constructor(private prisma: PrismaService) {}
 
-    constructor(private prisma: PrismaService) {}
+  async getWorklogs(query: GetWorklogsDto) {
+    const { remittance_status, user_id, period_start, period_end } = query;
 
-    getWorklogs(query: GetWorklogsDto) {
-        const { remittance_status, user_id, period_start, period_end } = query;
+    const { periodStart, periodEnd } = parsePeriod({
+      period_start,
+      period_end,
+    });
 
-        const filters: string[] = [];
-        const values: any[] = [];
+    const worklogs = await fetchWorklogs(this.prisma, {
+      user_id,
+      periodStart,
+      periodEnd,
+    });
 
-        if (user_id) {
-            values.push(user_id);
-            filters.push(`wl.worker_id = $${values.length}`);
-        }
+    if (worklogs.length === 0) return [];
 
-        if (period_start) {
-            values.push(new Date(period_start));
-            filters.push(`ts.start_time >= $${values.length}`);
-        }
+    const worklogIds = worklogs.map((wl) => wl.id);
 
-        if (period_end) {
-            values.push(new Date(period_end));
-            filters.push(`ts.end_time <= $${values.length}`);
-        }
+    const amountByWorklogId = await computeAmounts(
+      this.prisma,
+      remittance_status,
+      {
+        worklogIds,
+        periodStart,
+        periodEnd,
+      },
+    );
 
-        const whereClause =
-            filters.length > 0 ? `WHERE ${filters.join(' AND ')}` : '';
-
-        if (remittance_status === 'REMITTED') {
-            return this.prisma.$queryRawUnsafe(`
-        SELECT wl.id,
-               wl.worker_id,
-               wl.task_id,
-               COALESCE(SUM(sl.amount), 0) as amount
-        FROM worklogs wl
-               JOIN time_segments ts
-                    ON ts.worklog_id = wl.id
-               JOIN settlement_lines sl
-                    ON sl.source_id = ts.id
-                      AND sl.source_type = 'TIME_SEGMENT'
-               JOIN remittances r
-                    ON r.settlement_run_id = sl.settlement_run_id
-                      AND r.status = 'PAID'
-          ${whereClause}
-        GROUP BY wl.id
-      `, ...values);
-        }
-
-        return this.prisma.$queryRawUnsafe(`
-      SELECT wl.id,
-             wl.worker_id,
-             wl.task_id,
-             COALESCE(SUM(
-                        (ts.minutes_duration / 60.0) * ts.hourly_rate_snapshot
-                      ), 0)
-               +
-             COALESCE(SUM(adj.amount), 0) as amount
-      FROM worklogs wl
-             LEFT JOIN time_segments ts
-                       ON ts.worklog_id = wl.id
-                         AND ts.status = 'ACTIVE'
-                         AND NOT EXISTS (SELECT 1
-                                         FROM settlement_lines sl
-                                         WHERE sl.source_id = ts.id
-                                           AND sl.source_type = 'TIME_SEGMENT')
-             LEFT JOIN adjustments adj
-                       ON adj.time_segment_id = ts.id
-                         AND NOT EXISTS (SELECT 1
-                                         FROM settlement_lines sl
-                                         WHERE sl.source_id = adj.id
-                                           AND sl.source_type = 'ADJUSTMENT')
-        ${whereClause}
-      GROUP BY wl.id
-    `, ...values);
-    }
+    return toWorklogResponses(worklogs, amountByWorklogId, {
+      onlyWithAmount: remittance_status === 'REMITTED',
+    });
+  }
 }

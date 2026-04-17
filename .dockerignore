@@ -1,0 +1,10 @@
+.git
+.idea
+.cursor
+**/node_modules
+**/dist
+**/coverage
+**/.env
+**/.env.*
+**/*.log
+

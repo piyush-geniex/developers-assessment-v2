@@ -8,6 +8,12 @@ const prisma = new PrismaClient({
 });
 
 async function main() {
+    const existing = await prisma.workLog.count();
+    if (existing > 0) {
+        console.log(`🌱 Seed skipped (worklogs already present: ${existing})`);
+        return;
+    }
+
     const filePath = path.resolve(__dirname, '../../seed/worklogs.json');
     if (!fs.existsSync(filePath)) {
         throw new Error(`Seed file not found at ${filePath}`);

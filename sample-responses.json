@@ -1,0 +1,89 @@
+{
+  "generate_remittances": {
+    "request": {
+      "period_start": "2025-11-01",
+      "period_end": "2025-11-30"
+    },
+    "response_201": {
+      "data": {
+        "settlementAttemptId": "9b8b2d3d-3bd6-4a4c-9d3f-7c6a6e2e2b6a",
+        "workersPaid": 2
+      },
+      "meta": {
+        "timestamp": "2026-04-17T13:30:00.000Z",
+        "request_id": "4c5a7b9e-0c1f-4b68-9b86-1a2b3c4d5e6f"
+      }
+    },
+    "response_409_duplicate_period": {
+      "data": {
+        "statusCode": 409,
+        "message": "Settlement already exists for this period",
+        "error": "Conflict"
+      },
+      "meta": {
+        "timestamp": "2026-04-17T13:31:00.000Z",
+        "request_id": "b7c61f6f-5a62-4bb0-a2f1-2c3d4e5f6a7b"
+      }
+    }
+  },
+  "worklogs": {
+    "request": {
+      "query": {
+        "remittance_status": "UNREMITTED",
+        "user_id": "0a7d5b5a-5f42-4b92-8e2f-0a1b2c3d4e5f",
+        "period_start": "2025-11-01",
+        "period_end": "2025-11-30"
+      }
+    },
+    "response_200": {
+      "data": [
+        {
+          "id": "d7a1f5c2-6e4b-4f52-93d3-1d2e3f4a5b6c",
+          "amount": 245.5,
+          "worker": {
+            "id": "0a7d5b5a-5f42-4b92-8e2f-0a1b2c3d4e5f",
+            "email": "worker-1@test.com",
+            "name": "Worker One"
+          },
+          "task": {
+            "id": "3f2e1d0c-9b8a-4c7d-8e6f-5a4b3c2d1e0f",
+            "name": "Warehouse Packing",
+            "description": "Pack items for outbound shipment"
+          }
+        },
+        {
+          "id": "a1b2c3d4-e5f6-4a5b-9c8d-7e6f5a4b3c2d",
+          "amount": -15,
+          "worker": {
+            "id": "0a7d5b5a-5f42-4b92-8e2f-0a1b2c3d4e5f",
+            "email": "worker-1@test.com",
+            "name": "Worker One"
+          },
+          "task": {
+            "id": "7a6b5c4d-3e2f-4a1b-9c8d-0e1f2a3b4c5d",
+            "name": "Customer Follow-up",
+            "description": "Resolve customer support tickets"
+          }
+        }
+      ],
+      "meta": {
+        "timestamp": "2026-04-17T13:32:00.000Z",
+        "request_id": "0f1e2d3c-4b5a-6978-8796-a5b4c3d2e1f0"
+      }
+    },
+    "response_400_validation": {
+      "data": {
+        "statusCode": 400,
+        "message": [
+          "remittance_status must be one of the following values: REMITTED, UNREMITTED"
+        ],
+        "error": "Bad Request"
+      },
+      "meta": {
+        "timestamp": "2026-04-17T13:33:00.000Z",
+        "request_id": "9f8e7d6c-5b4a-3928-1706-f5e4d3c2b1a0"
+      }
+    }
+  }
+}
+

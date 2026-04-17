@@ -1,0 +1,183 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider        = "prisma-client-js"
+  binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
+  previewFeatures = ["fullTextSearchPostgres", "relationJoins"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Worker {
+  id    String @id @default(uuid())
+  email String @unique @db.VarChar(255)
+  name  String @db.VarChar(255)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  workLogs        WorkLog[]
+  adjustments     Adjustment[]
+  remittances     Remittance[]
+  settlementLines SettlementLine[]
+
+  @@map("workers")
+}
+
+model Task {
+  id          String @id @default(uuid())
+  name        String @db.VarChar(255)
+  description String @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  workLogs WorkLog[]
+
+  @@map("tasks")
+}
+
+model WorkLog {
+  id       String        @id @default(uuid())
+  workerId String        @map("worker_id")
+  taskId   String        @map("task_id")
+  status   WorkLogStatus
+
+  lastSettledAt DateTime? @map("last_settled_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  worker       Worker        @relation(fields: [workerId], references: [id])
+  task         Task          @relation(fields: [taskId], references: [id])
+  timeSegments TimeSegment[]
+
+  @@index([workerId])
+  @@index([taskId])
+  @@map("worklogs")
+}
+
+model TimeSegment {
+  id                 String            @id @default(uuid())
+  workLogId          String            @map("worklog_id")
+  startTime          DateTime          @map("start_time")
+  endTime            DateTime          @map("end_time")
+  minutesDuration    Int               @map("minutes_duration")
+  hourlyRateSnapshot Decimal           @map("hourly_rate_snapshot") @db.Decimal(12, 2)
+  status             TimeSegmentStatus
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  workLog         WorkLog          @relation(fields: [workLogId], references: [id])
+  settlementLines SettlementLine[]
+  adjustments     Adjustment[]
+
+  @@index([workLogId])
+  @@map("time_segments")
+}
+
+model Adjustment {
+  id            String   @id @default(uuid())
+  workerId      String   @map("worker_id")
+  timeSegmentId String?  @map("time_segment_id")
+  amount        Decimal  @map("amount") @db.Decimal(12, 2)
+  reason        String
+  effectiveDate DateTime @map("effective_date")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  worker          Worker           @relation(fields: [workerId], references: [id])
+  timeSegment     TimeSegment?     @relation(fields: [timeSegmentId], references: [id])
+  settlementLines SettlementLine[]
+
+  @@index([workerId])
+  @@map("adjustments")
+}
+
+model SettlementAttempt {
+  id          String                  @id @default(uuid())
+  periodStart DateTime                @map("period_start")
+  periodEnd   DateTime                @map("period_end")
+  status      SettlementAttemptStatus
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  settlementLines SettlementLine[]
+  remittances     Remittance[]
+
+  @@unique([periodStart, periodEnd])
+  @@map("settlement_attempts")
+}
+
+model SettlementLine {
+  id                  String               @id @default(uuid())
+  settlementAttemptId String               @map("settlement_run_id")
+  workerId            String               @map("worker_id")
+  sourceType          SettlementSourceType @map("source_type")
+  sourceId            String               @map("source_id")
+  amount              Decimal              @db.Decimal(12, 2)
+  periodStart         DateTime             @map("period_start")
+  periodEnd           DateTime             @map("period_end")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  settlementRun SettlementAttempt @relation(fields: [settlementAttemptId], references: [id])
+  worker        Worker            @relation(fields: [workerId], references: [id])
+  adjustments   Adjustment[]
+  timeSegments  TimeSegment[]
+
+  @@unique([sourceType, sourceId])
+  @@index([workerId])
+  @@index([settlementAttemptId])
+  @@map("settlement_lines")
+}
+
+model Remittance {
+  id                  String           @id @default(uuid())
+  workerId            String           @map("worker_id")
+  settlementAttemptId String           @map("settlement_run_id")
+  totalAmount         Decimal          @map("total_amount") @db.Decimal(12, 2)
+  status              RemittanceStatus
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  worker            Worker            @relation(fields: [workerId], references: [id])
+  settlementAttempt SettlementAttempt @relation(fields: [settlementAttemptId], references: [id])
+
+  @@index([workerId])
+  @@index([settlementAttemptId])
+  @@map("remittances")
+}
+
+enum WorkLogStatus {
+  OPEN
+  CLOSED
+}
+
+enum TimeSegmentStatus {
+  ACTIVE
+  REMOVED
+  DISPUTED
+}
+
+enum SettlementSourceType {
+  TIME_SEGMENT
+  ADJUSTMENT
+}
+
+enum SettlementAttemptStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum RemittanceStatus {
+  PENDING
+  PAID
+  FAILED
+  CANCELLED
+}

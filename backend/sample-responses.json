@@ -1,0 +1,80 @@
+{
+  "generate_remittances_response": {
+    "data": {
+      "succeeded": 3,
+      "failed": 0,
+      "errors": [],
+      "summary": {
+        "total_remittances_created": 3,
+        "total_amount_processed": 1840.5
+      }
+    },
+    "meta": {
+      "timestamp": "2025-12-01T10:00:00Z"
+    }
+  },
+
+  "worklogs_response": {
+    "data": [
+      {
+        "worklog_id": "wl-001",
+        "user_id": "usr-a",
+        "user_name": "Alice Chen",
+        "task_name": "API Integration - Phase 1",
+        "hourly_rate": 75,
+        "remittance_status": "REMITTED",
+        "total_amount": 1185.0,
+        "segments_count": 3,
+        "adjustments_count": 1
+      },
+      {
+        "worklog_id": "wl-002",
+        "user_id": "usr-a",
+        "user_name": "Alice Chen",
+        "task_name": "Database Migration Scripts",
+        "hourly_rate": 75,
+        "remittance_status": "REMITTED",
+        "total_amount": 337.5,
+        "segments_count": 2,
+        "adjustments_count": 0
+      },
+      {
+        "worklog_id": "wl-003",
+        "user_id": "usr-b",
+        "user_name": "Bob Martinez",
+        "task_name": "Frontend Dashboard Redesign",
+        "hourly_rate": 85,
+        "remittance_status": "REMITTED",
+        "total_amount": 1700.0,
+        "segments_count": 3,
+        "adjustments_count": 0
+      },
+      {
+        "worklog_id": "wl-004",
+        "user_id": "usr-b",
+        "user_name": "Bob Martinez",
+        "task_name": "Component Library Setup",
+        "hourly_rate": 85,
+        "remittance_status": "REMITTED",
+        "total_amount": -170.0,
+        "segments_count": 2,
+        "adjustments_count": 1
+      },
+      {
+        "worklog_id": "wl-005",
+        "user_id": "usr-c",
+        "user_name": "Carla Johansson",
+        "task_name": "Payment Gateway Integration",
+        "hourly_rate": 95,
+        "remittance_status": "UNREMITTED",
+        "total_amount": 2850.0,
+        "segments_count": 3,
+        "adjustments_count": 0
+      }
+    ],
+    "meta": {
+      "timestamp": "2025-12-01T10:00:00Z",
+      "total_records": 5
+    }
+  }
+}

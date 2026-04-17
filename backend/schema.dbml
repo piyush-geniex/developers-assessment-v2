@@ -1,0 +1,61 @@
+// ===============================
+// WorkLog Settlement System DB Schema
+// ===============================
+
+Table worklog {
+  id serial [pk]
+
+  worklog_id varchar [unique]  // external id (wl-001)
+
+  user_id varchar
+  user_name varchar
+
+  task_name varchar
+
+  hourly_rate decimal(10,2)
+
+  segments jsonb
+  adjustments jsonb
+
+  remittance_status varchar [default: 'UNREMITTED']
+
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table remittance {
+  id serial [pk]
+
+  user_id varchar
+
+  amount decimal(10,2)
+
+  period_start date
+  period_end date
+
+  status varchar // PENDING | SUCCESS | FAILED
+
+  created_at timestamp
+}
+
+Table settlement_run {
+  id serial [pk]
+
+  period_start date
+  period_end date
+
+  status varchar // RUNNING | COMPLETED | FAILED
+
+  total_users int
+  succeeded int
+  failed int
+
+  created_at timestamp
+}
+
+
+// ===============================
+// RELATIONSHIPS
+// ===============================
+
+Ref: remittance.user_id > worklog.user_id

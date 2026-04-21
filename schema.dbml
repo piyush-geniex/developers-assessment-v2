@@ -1,0 +1,77 @@
+Table worklog {
+  id          serial       [pk]
+  worklog_id  varchar(50)  [unique, not null]
+  user_id     varchar(50)  [not null]
+  user_name   varchar(255) [not null]
+  task_name   varchar(255) [not null]
+  hourly_rate numeric(10,2)[not null]
+  created_at  timestamptz  [not null, default: `now()`]
+
+  indexes {
+    user_id
+  }
+}
+
+Table time_segment {
+  id             serial       [pk]
+  segment_id     varchar(50)  [unique, not null]
+  worklog_id     varchar(50)  [not null, ref: > worklog.worklog_id]
+  start_time     timestamptz  [not null]
+  end_time       timestamptz  [not null]
+  status         varchar(20)  [not null, default: 'approved', note: 'approved | disputed | cancelled']
+  dispute_reason text
+  created_at     timestamptz  [not null, default: `now()`]
+
+  indexes {
+    worklog_id
+    start_time
+  }
+}
+
+Table adjustment {
+  id            serial       [pk]
+  adjustment_id varchar(50)  [unique, not null]
+  worklog_id    varchar(50)  [not null, ref: > worklog.worklog_id]
+  amount        numeric(10,2)[not null]
+  reason        text         [not null]
+  applied_at    timestamptz  [not null]
+  created_at    timestamptz  [not null, default: `now()`]
+
+  indexes {
+    worklog_id
+    applied_at
+  }
+}
+
+Table remittance {
+  id                serial       [pk]
+  user_id           varchar(50)  [not null]
+  period_start      date         [not null]
+  period_end        date         [not null]
+  gross_amount      numeric(12,2)[not null, default: 0]
+  adjustment_amount numeric(12,2)[not null, default: 0]
+  net_amount        numeric(12,2)[not null, default: 0]
+  status            varchar(20)  [not null, default: 'pending', note: 'pending | paid | failed | cancelled']
+  created_at        timestamptz  [not null, default: `now()`]
+
+  indexes {
+    user_id
+    (period_start, period_end)
+    (user_id, period_start, period_end) [unique]
+  }
+}
+
+Table remittance_line {
+  id                serial       [pk]
+  remittance_id     int          [not null, ref: > remittance.id]
+  worklog_id        varchar(50)  [not null, ref: > worklog.worklog_id]
+  segment_amount    numeric(12,2)[not null, default: 0]
+  adjustment_amount numeric(12,2)[not null, default: 0]
+  line_total        numeric(12,2)[not null, default: 0]
+
+  indexes {
+    remittance_id
+    worklog_id
+    (remittance_id, worklog_id) [unique]
+  }
+}

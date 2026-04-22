@@ -1,289 +1,126 @@
-[
-  {
-    "worklog_id": "wl-001",
-    "user_id": "usr-a",
-    "user_name": "Alice Chen",
-    "task_name": "API Integration - Phase 1",
-    "hourly_rate": 75.00,
-    "segments": [
-      {
-        "segment_id": "seg-001",
-        "start": "2025-10-14T09:00:00Z",
-        "end": "2025-10-14T13:30:00Z",
-        "status": "approved"
-      },
-      {
-        "segment_id": "seg-002",
-        "start": "2025-10-15T10:00:00Z",
-        "end": "2025-10-15T11:00:00Z",
-        "status": "disputed",
-        "dispute_reason": "Overlapping entry with another task"
-      },
-      {
-        "segment_id": "seg-003",
-        "start": "2025-10-16T14:00:00Z",
-        "end": "2025-10-16T18:00:00Z",
-        "status": "approved"
-      }
-    ],
-    "adjustments": [
-      {
-        "adjustment_id": "adj-001",
-        "amount": -37.50,
-        "reason": "Quality review: rework required on endpoint validation",
-        "applied_at": "2025-11-10T00:00:00Z"
-      }
-    ]
-  },
-  {
-    "worklog_id": "wl-002",
-    "user_id": "usr-a",
-    "user_name": "Alice Chen",
-    "task_name": "Database Migration Scripts",
-    "hourly_rate": 75.00,
-    "segments": [
-      {
-        "segment_id": "seg-004",
-        "start": "2025-11-03T08:00:00Z",
-        "end": "2025-11-03T12:00:00Z",
-        "status": "approved"
-      },
-      {
-        "segment_id": "seg-005",
-        "start": "2025-11-04T09:00:00Z",
-        "end": "2025-11-04T11:30:00Z",
-        "status": "approved"
-      }
-    ],
-    "adjustments": []
-  },
-  {
-    "worklog_id": "wl-003",
-    "user_id": "usr-b",
-    "user_name": "Bob Martinez",
-    "task_name": "Frontend Dashboard Redesign",
-    "hourly_rate": 85.00,
-    "segments": [
-      {
-        "segment_id": "seg-006",
-        "start": "2025-10-20T10:00:00Z",
-        "end": "2025-10-20T16:00:00Z",
-        "status": "approved"
-      },
-      {
-        "segment_id": "seg-007",
-        "start": "2025-10-21T09:00:00Z",
-        "end": "2025-10-21T09:00:00Z",
-        "status": "approved"
-      },
-      {
-        "segment_id": "seg-008",
-        "start": "2025-10-22T11:00:00Z",
-        "end": "2025-10-22T17:30:00Z",
-        "status": "approved"
-      }
-    ],
-    "adjustments": []
-  },
-  {
-    "worklog_id": "wl-004",
-    "user_id": "usr-b",
-    "user_name": "Bob Martinez",
-    "task_name": "Component Library Setup",
-    "hourly_rate": 85.00,
-    "segments": [
-      {
-        "segment_id": "seg-009",
-        "start": "2025-11-01T09:00:00Z",
-        "end": "2025-11-01T13:00:00Z",
-        "status": "approved"
-      },
-      {
-        "segment_id": "seg-010",
-        "start": "2025-11-02T10:00:00Z",
-        "end": "2025-11-02T15:00:00Z",
-        "status": "cancelled",
-        "dispute_reason": "Work duplicated by another contractor"
-      }
-    ],
-    "adjustments": [
-      {
-        "adjustment_id": "adj-002",
-        "amount": -170.00,
-        "reason": "Retroactive deduction: deliverable did not meet acceptance criteria",
-        "applied_at": "2025-12-05T00:00:00Z"
-      }
-    ]
-  },
-  {
-    "worklog_id": "wl-005",
-    "user_id": "usr-c",
-    "user_name": "Carla Johansson",
-    "task_name": "Payment Gateway Integration",
-    "hourly_rate": 95.00,
-    "segments": [
-      {
-        "segment_id": "seg-011",
-        "start": "2025-10-07T08:00:00Z",
-        "end": "2025-10-07T16:00:00Z",
-        "status": "approved"
-      },
-      {
-        "segment_id": "seg-012",
-        "start": "2025-10-08T08:00:00Z",
-        "end": "2025-10-08T12:00:00Z",
-        "status": "approved"
-      },
-      {
-        "segment_id": "seg-013",
-        "start": "2025-10-09T13:00:00Z",
-        "end": "2025-10-09T17:00:00Z",
-        "status": "approved"
-      }
-    ],
-    "adjustments": []
-  },
-  {
-    "worklog_id": "wl-006",
-    "user_id": "usr-c",
-    "user_name": "Carla Johansson",
-    "task_name": "Webhook Event Handlers",
-    "hourly_rate": 95.00,
-    "segments": [
-      {
-        "segment_id": "seg-014",
-        "start": "2025-11-10T09:00:00Z",
-        "end": "2025-11-10T13:00:00Z",
-        "status": "approved"
-      },
-      {
-        "segment_id": "seg-015",
-        "start": "2025-11-11T10:00:00Z",
-        "end": "2025-11-11T16:00:00Z",
-        "status": "disputed",
-        "dispute_reason": "Hours exceeded estimate without prior approval"
-      },
-      {
-        "segment_id": "seg-016",
-        "start": "2025-11-12T08:00:00Z",
-        "end": "2025-11-12T10:00:00Z",
-        "status": "approved"
-      }
-    ],
-    "adjustments": [
-      {
-        "adjustment_id": "adj-003",
-        "amount": -47.50,
-        "reason": "Partial rework: error handling did not meet spec",
-        "applied_at": "2025-11-20T00:00:00Z"
-      }
-    ]
-  },
-  {
-    "worklog_id": "wl-007",
-    "user_id": "usr-d",
-    "user_name": "David Park",
-    "task_name": "CI/CD Pipeline Configuration",
-    "hourly_rate": 70.00,
-    "segments": [
-      {
-        "segment_id": "seg-017",
-        "start": "2025-10-28T09:00:00Z",
-        "end": "2025-10-28T17:00:00Z",
-        "status": "approved"
-      },
-      {
-        "segment_id": "seg-018",
-        "start": "2025-10-29T09:00:00Z",
-        "end": "2025-10-29T12:00:00Z",
-        "status": "approved"
-      }
-    ],
-    "adjustments": []
-  },
-  {
-    "worklog_id": "wl-008",
-    "user_id": "usr-d",
-    "user_name": "David Park",
-    "task_name": "Monitoring and Alerting Setup",
-    "hourly_rate": 70.00,
-    "segments": [
-      {
-        "segment_id": "seg-019",
-        "start": "2025-11-05T10:00:00Z",
-        "end": "2025-11-05T14:00:00Z",
-        "status": "approved"
-      },
-      {
-        "segment_id": "seg-020",
-        "start": "2025-11-06T10:00:00Z",
-        "end": "2025-11-06T16:00:00Z",
-        "status": "approved"
-      },
-      {
-        "segment_id": "seg-021",
-        "start": "2025-11-07T09:00:00Z",
-        "end": "2025-11-07T11:00:00Z",
-        "status": "approved"
-      }
-    ],
-    "adjustments": []
-  },
-  {
-    "worklog_id": "wl-009",
-    "user_id": "usr-a",
-    "user_name": "Alice Chen",
-    "task_name": "API Integration - Phase 2",
-    "hourly_rate": 80.00,
-    "segments": [
-      {
-        "segment_id": "seg-022",
-        "start": "2025-11-17T09:00:00Z",
-        "end": "2025-11-17T13:00:00Z",
-        "status": "approved"
-      },
-      {
-        "segment_id": "seg-023",
-        "start": "2025-11-18T14:00:00Z",
-        "end": "2025-11-18T18:00:00Z",
-        "status": "approved"
-      }
-    ],
-    "adjustments": [
-      {
-        "adjustment_id": "adj-004",
-        "amount": 120.00,
-        "reason": "Bonus: completed ahead of schedule with zero defects",
-        "applied_at": "2025-12-01T00:00:00Z"
-      }
-    ]
-  },
-  {
-    "worklog_id": "wl-010",
-    "user_id": "usr-b",
-    "user_name": "Bob Martinez",
-    "task_name": "Accessibility Audit Fixes",
-    "hourly_rate": 85.00,
-    "segments": [
-      {
-        "segment_id": "seg-024",
-        "start": "2025-11-20T09:00:00Z",
-        "end": "2025-11-20T12:00:00Z",
-        "status": "approved"
-      },
-      {
-        "segment_id": "seg-025",
-        "start": "2025-11-21T13:00:00Z",
-        "end": "2025-11-21T17:00:00Z",
-        "status": "approved"
-      },
-      {
-        "segment_id": "seg-026",
-        "start": "2025-11-20T10:00:00Z",
-        "end": "2025-11-20T14:00:00Z",
-        "status": "approved"
-      }
-    ],
-    "adjustments": []
-  }
-]
+{
+  "users": [
+    {
+      "external_id": "usr_anya",
+      "display_name": "Anya Petrova",
+      "email": "anya@example.com",
+      "hourly_rate_cents": 7500
+    },
+    {
+      "external_id": "usr_ben",
+      "display_name": "Ben Okoro",
+      "email": "ben@example.com",
+      "hourly_rate_cents": 6000
+    },
+    {
+      "external_id": "usr_carmen",
+      "display_name": "Carmen Diaz",
+      "email": "carmen@example.com",
+      "hourly_rate_cents": 8000
+    }
+  ],
+  "tasks": [
+    {
+      "external_id": "tsk_mobile",
+      "title": "Mobile app accessibility audit"
+    },
+    {
+      "external_id": "tsk_api",
+      "title": "Payments API hardening"
+    },
+    {
+      "external_id": "tsk_docs",
+      "title": "Support runbooks"
+    }
+  ],
+  "worklogs": [
+    {
+      "external_id": "wl_anya_mobile",
+      "task_external_id": "tsk_mobile",
+      "user_external_id": "usr_anya"
+    },
+    {
+      "external_id": "wl_anya_api",
+      "task_external_id": "tsk_api",
+      "user_external_id": "usr_anya"
+    },
+    {
+      "external_id": "wl_ben_docs",
+      "task_external_id": "tsk_docs",
+      "user_external_id": "usr_ben"
+    },
+    {
+      "external_id": "wl_carmen_api",
+      "task_external_id": "tsk_api",
+      "user_external_id": "usr_carmen"
+    }
+  ],
+  "time_entries": [
+    {
+      "worklog_external_id": "wl_anya_mobile",
+      "occurred_on": "2025-11-04",
+      "hours": 5.5,
+      "memo": "Screen reader pass + notes",
+      "status": "approved"
+    },
+    {
+      "worklog_external_id": "wl_anya_mobile",
+      "occurred_on": "2025-11-18",
+      "hours": 3.0,
+      "memo": "Follow-up fixes",
+      "status": "approved"
+    },
+    {
+      "worklog_external_id": "wl_anya_api",
+      "occurred_on": "2025-11-10",
+      "hours": 6.25,
+      "memo": "Idempotency review",
+      "status": "approved"
+    },
+    {
+      "worklog_external_id": "wl_anya_api",
+      "occurred_on": "2025-12-02",
+      "hours": 2.0,
+      "memo": "New segments after November settlement window",
+      "status": "approved"
+    },
+    {
+      "worklog_external_id": "wl_ben_docs",
+      "occurred_on": "2025-11-07",
+      "hours": 4.0,
+      "memo": "Draft runbooks",
+      "status": "approved"
+    },
+    {
+      "worklog_external_id": "wl_ben_docs",
+      "occurred_on": "2025-11-21",
+      "hours": 2.5,
+      "memo": "Diagrams",
+      "status": "approved"
+    },
+    {
+      "worklog_external_id": "wl_carmen_api",
+      "occurred_on": "2025-11-12",
+      "hours": 7.0,
+      "memo": "Load test fixes",
+      "status": "approved"
+    },
+    {
+      "worklog_external_id": "wl_carmen_api",
+      "occurred_on": "2025-11-25",
+      "hours": 1.5,
+      "memo": "Minor polish",
+      "status": "approved"
+    }
+  ],
+  "adjustments": [
+    {
+      "user_external_id": "usr_anya",
+      "worklog_external_id": "wl_anya_mobile",
+      "amount_cents": -11250,
+      "reason": "Retroactive quality deduction for October deliverable (applied on next remittance)",
+      "relates_to_period_start": "2025-10-01",
+      "relates_to_period_end": "2025-10-31"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  # Database Service
+  db:
+    image: postgres:15-alpine
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+      POSTGRES_DB: ${DB_NAME:-developper_worklog}
+    ports:
+      - '5433:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d ${DB_NAME:-developper_worklog}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # NestJS Application Service
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nestjs_api
+    restart: always
+    ports:
+      - '3007:3000'
+    environment:
+      POSTGRES_SERVER: db          
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+      POSTGRES_DB: ${DB_NAME:-developper_worklog}
+    depends_on:
+      db:
+        condition: service_healthy # Ensures DB is ready before API starts
+
+volumes:
+  postgres_data:

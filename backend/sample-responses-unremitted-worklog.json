@@ -1,0 +1,36 @@
+{
+  "data": [
+    {
+      "id": 13,
+      "type": "worklog",
+      "payload": {
+        "user_id": "usr-b",
+        "task_name": "Component Library Setup",
+        "user_name": "Bob Martinez",
+        "worklog_id": "wl-004",
+        "hourly_rate": 85
+      },
+      "total_amount": 170,
+      "remittance_id": null,
+      "is_remitted": false
+    },
+    {
+      "id": 37,
+      "type": "worklog",
+      "payload": {
+        "user_id": "usr-b",
+        "task_name": "Accessibility Audit Fixes",
+        "user_name": "Bob Martinez",
+        "worklog_id": "wl-010",
+        "hourly_rate": 85
+      },
+      "total_amount": 935,
+      "remittance_id": null,
+      "is_remitted": false
+    }
+  ],
+  "meta": {
+    "timestamp": "2026-04-23T02:14:41.747Z",
+    "request_id": "12503686-78be-42f4-a71a-9afef79ebd2e"
+  }
+}
